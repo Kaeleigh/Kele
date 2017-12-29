@@ -22,14 +22,8 @@ class Kele
   def get_mentor_availability(mentor_id)
     response = self.class.get("/mentors/#{mentor_id}/student_availability", headers: {authorization: @auth_token} ).to_a
     availability = []
-    response.each do |timeslot|
-      if timeslot["booked"] == nil
-        availability.push(timeslot)
-      end
-    end
-    puts availability
+    response.map {|timeslot| timeslot if timeslot["booked"] == true }
+    availability
   end
-
-
 # closes class
 end
