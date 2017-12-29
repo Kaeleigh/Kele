@@ -21,8 +21,8 @@ class Kele
 
   def get_mentor_availability(mentor_id)
     response = self.class.get("/mentors/#{mentor_id}/student_availability", headers: {authorization: @auth_token} ).to_a
-    response.map {|timeslot| timeslot if timeslot["booked"] == true } end
-
+    availability = []
+    response.map {|timeslot| timeslot if timeslot["booked"] == true } 
     availability
   end
 # closes class
