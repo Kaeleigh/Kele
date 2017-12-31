@@ -27,5 +27,29 @@ class Kele
     response.map {|timeslot| timeslot if timeslot["booked"] == true }
     availability
   end
+
+  def get_messages(page = nil)
+    if page.nil?
+      response = self.class.get("/message_threads", headers: { authorization: @auth_token })
+    else
+      response = self.class.get("/message_threads", body: { page: page }, headers: { authorization: @auth_token })
+    end
+    JSON.parse(response.body)
+  end
+
+  def create_message(recipient_id, subject, token = nil, msg)
+    msg_data = "{
+    'sender': #{get_me['email']},
+    'recipient_id': #{recipient_id},
+    'token': #{token},
+    'subject': #{subject}
+    'stripped-text': #{msg}
+    }"
+
+    response = self.class.post("/messages", header: { authorization: @auth_token }, body: msg_data)
+
+    "Message Sent Successfully!" if response.success?
+  end
+
 # closes class
 end
