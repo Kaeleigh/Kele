@@ -50,6 +50,5 @@ class Kele
 
     "Message Sent Successfully!" if response.success?
   end
-
 # closes class
 end
