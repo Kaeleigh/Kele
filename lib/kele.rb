@@ -7,6 +7,8 @@ class Kele
   include Roadmap
   base_uri 'https://www.bloc.io/api/v1'
 
+  attr_reader :auth_token
+
   def initialize(email, password)
     post_response = self.class.post('/sessions', body: {email: email, password: password})
     @auth_token = post_response['auth_token']
@@ -17,12 +19,12 @@ class Kele
   end
 
   def get_me
-    response = self.class.get('/users/me', headers: {authorization: @auth_token} )
+    response = self.class.get('/users/me', headers: {authorization: auth_token} )
     JSON.parse(response.body)
   end
 
   def get_mentor_availability(mentor_id)
-    response = self.class.get("/mentors/#{mentor_id}/student_availability", headers: {authorization: @auth_token} ).to_a
+    response = self.class.get("/mentors/#{mentor_id}/student_availability", headers: {authorization: auth_token} ).to_a
     availability = []
     response.map {|timeslot| timeslot if timeslot["booked"] == true }
     availability
@@ -30,10 +32,11 @@ class Kele
 
   def get_messages(page = nil)
     if page.nil?
-      response = self.class.get("/message_threads", headers: { authorization: @auth_token })
+      response = self.class.get("/message_threads", headers: { authorization: auth_token })
     else
-      response = self.class.get("/message_threads", body: { page: page }, headers: { authorization: @auth_token })
+      response = self.class.get("/message_threads", body: { page: page }, headers: { authorization: auth_token })
     end
+
     JSON.parse(response.body)
   end
 
@@ -46,9 +49,9 @@ class Kele
     'stripped-text': #{msg}
     }"
 
-    response = self.class.post("/messages", header: { authorization: @auth_token }, body: msg_data)
+    response = self.class.post("/messages", header: { authorization: auth_token }, body: msg_data)
 
-    "Message Sent Successfully!" if response.success?
+    JSON.parse(response.body)
   end
 # closes class
 end
